@@ -22,9 +22,12 @@ cd ${MARTe2_DIR}
 git apply ../patches/marte2_omnv_exp.patch
 cp ../custom_GAMs/MARTe2_Docs_User_source__static_examples_Core/* Docs/User/source/_static/examples/Core/
 make -f Makefile.gcc core
+```
+
+```sh
 cd ${MARTe2_DIR}/Docs/User/source/_static/examples/Core
 make -f Makefile.gcc
-``
+```
 
 Compile the MARTe2-components Core:
 ```sh
