@@ -1,0 +1,101 @@
+diff --git a/Docs/User/source/_static/examples/Core/Makefile.inc b/Docs/User/source/_static/examples/Core/Makefile.inc
+index 923eb51e4..6a9441afd 100644
+--- a/Docs/User/source/_static/examples/Core/Makefile.inc
++++ b/Docs/User/source/_static/examples/Core/Makefile.inc
+@@ -96,6 +96,8 @@ all: $(OBJS) $(SUBPROJ) \
+         $(BUILD_DIR)/ThreadsExample3$(EXEEXT) \
+         $(BUILD_DIR)/TypesExample1$(EXEEXT) \
+         $(BUILD_DIR)/TypesExample2$(EXEEXT) \
++	$(BUILD_DIR)/VSGAMClassic$(GAMEXT) \
++	$(BUILD_DIR)/VSGAMExtremum$(GAMEXT) \
+         $(BUILD_DIR)/VariableGAMExample1$(GAMEXT)
+ 	echo  $(OBJS)
+ 
+diff --git a/MakeDefaults/MakeStdLibDefs.gcc b/MakeDefaults/MakeStdLibDefs.gcc
+index 11ef0190c..c9b81f983 100644
+--- a/MakeDefaults/MakeStdLibDefs.gcc
++++ b/MakeDefaults/MakeStdLibDefs.gcc
+@@ -70,7 +70,7 @@ MARTe2_OPTIM ?=
+ OPTIM ?= $(MARTe2_OPTIM)
+ LFLAGS ?=
+ #-O2 would force -fstrict-overflow and this breaks the compilation of the core (dereferencing type-punned pointer will break strict-aliasing rules)
+-CFLAGS ?= -fPIC -Wall -std=c++98 -Werror -Wno-invalid-offsetof -Wno-unused-variable -fno-strict-aliasing
++CFLAGS ?= -fPIC -Wall -Wno-invalid-offsetof -Wno-unused-variable -fno-strict-aliasing
+ CPPFLAGS ?= $(CFLAGS) -frtti 
+ CFLAGSPEC ?= -DMARTe2_TEST_ENVIRONMENT=$(MARTe2_TEST_ENVIRONMENT) -DARCHITECTURE=$(ARCHITECTURE) -DENVIRONMENT=$(ENVIRONMENT)
+ LIBRARIES ?=  
+diff --git a/Source/App/MARTeApp.cpp b/Source/App/MARTeApp.cpp
+index 33e2cb8c6..d2ae4cda4 100644
+--- a/Source/App/MARTeApp.cpp
++++ b/Source/App/MARTeApp.cpp
+@@ -39,6 +39,8 @@
+ #include "ObjectRegistryDatabase.h"
+ #include "ReferenceT.h"
+ #include "StreamI.h"
++// #include <sched.h>
++// #include <unistd.h>
+ 
+ /*---------------------------------------------------------------------------*/
+ /*                           Static definitions                              */
+@@ -170,6 +172,23 @@ extern "C" {
+  * @return 0
+  */
+ int main(int argc, char **argv) {
++    // cpu_set_t set;
++    // int childCPU = 2;
++    
++    // CPU_ZERO(&set);
++    // CPU_SET(childCPU, &set);    
++    // if (sched_setaffinity(getpid(), sizeof(set), &set) == -1) {
++    //     return 1;
++    // }
++
++    // // Set real-time scheduling policy
++    // struct sched_param param;
++    // param.sched_priority = 75; 
++
++    // if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
++    //     return 1;
++    // }
++ 
+    bootstrap.Main(_main, argc, argv);
+    return 0;
+ }
+diff --git a/Source/Core/BareMetal/L0Types/Architecture/arm_gcc/CompilerTypesDefault.h b/Source/Core/BareMetal/L0Types/Architecture/arm_gcc/CompilerTypesDefault.h
+index b96e5c47b..672d6f1b7 100644
+--- a/Source/Core/BareMetal/L0Types/Architecture/arm_gcc/CompilerTypesDefault.h
++++ b/Source/Core/BareMetal/L0Types/Architecture/arm_gcc/CompilerTypesDefault.h
+@@ -69,6 +69,8 @@ typedef uint32      uintp;
+ 
+ #define HANDLE void *
+ 
++#define DLL_API
++#define DLL_API_EXPLICIT_EXPORT
+ #define dll_import
+ #define dll_export
+ }
+diff --git a/Source/Core/BareMetal/L0Types/HashFunction.h b/Source/Core/BareMetal/L0Types/HashFunction.h
+index 980464174..7985874e7 100644
+--- a/Source/Core/BareMetal/L0Types/HashFunction.h
++++ b/Source/Core/BareMetal/L0Types/HashFunction.h
+@@ -42,7 +42,7 @@ namespace MARTe {
+  * @brief Interface for hash function objects.
+  * @details Implementors of this interface know how to compute an hash from a string ID.
+  */
+-class DLL_API HashFunction {
++class HashFunction {
+ public:
+ 
+     /**
+diff --git a/Source/Core/BareMetal/L5GAMs/Makefile.inc b/Source/Core/BareMetal/L5GAMs/Makefile.inc
+index 4e8878650..c9cc9f067 100644
+--- a/Source/Core/BareMetal/L5GAMs/Makefile.inc
++++ b/Source/Core/BareMetal/L5GAMs/Makefile.inc
+@@ -32,6 +32,7 @@ OBJSX=BrokerI.x \
+     GAMBareScheduler.x \
+     GAMSchedulerI.x \
+     GAMDataSource.x \
++    GAMDataSourceNC.x \
+     MemoryDataSourceI.x \
+     MemoryMapBroker.x \
+     MemoryMapInterpolatedInputBroker.x \

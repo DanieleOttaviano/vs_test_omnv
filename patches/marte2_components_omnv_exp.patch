@@ -1,0 +1,16 @@
+diff --git a/Test/Components/DataSources/RealTimeThreadAsyncBridge/RealTimeThreadAsyncBridgeTest.cpp b/Test/Components/DataSources/RealTimeThreadAsyncBridge/RealTimeThreadAsyncBridgeTest.cpp
+index 2d33acab..f2a71ef3 100644
+--- a/Test/Components/DataSources/RealTimeThreadAsyncBridge/RealTimeThreadAsyncBridgeTest.cpp
++++ b/Test/Components/DataSources/RealTimeThreadAsyncBridge/RealTimeThreadAsyncBridgeTest.cpp
+@@ -1583,9 +1583,9 @@ bool RealTimeThreadAsyncBridgeTest::TestGetOutputOffset_Ranges() {
+             int32 x1 = broker->GetOffset(2);
+ 
+             ret = ((2 * cnt) % (nBuffers)) * 10 * sizeof(uint32) == (uint32) x;
+-            printf("[0]. %d %d %d\n", (int) ret, (int) (cnt % (nBuffers * 10 * sizeof(uint32))), (int) x);
++            //printf("[0]. %d %d %d\n", (int) ret, (int) (cnt % (nBuffers * 10 * sizeof(uint32))), (int) x);
+             ret &= ((2 * cnt + 1) % (nBuffers)) * 10 * sizeof(uint32) == (uint32) x1;
+-            printf("[1]. %d %d %d\n", (int) ret, (int) (cnt % (nBuffers * 10 * sizeof(uint32))), (int) x1);
++            //printf("[1]. %d %d %d\n", (int) ret, (int) (cnt % (nBuffers * 10 * sizeof(uint32))), (int) x1);
+         }
+ 
+         dataSource->Done();
