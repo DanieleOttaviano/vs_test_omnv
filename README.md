@@ -60,6 +60,36 @@ WARNING: Check the interrupt numbers on the target with "cat /proc/interrupts"
 ./setup_board.sh
 ```
 
+On the target start the omnivisor:
+```sh
+cd ~
+./scripts_jailhouse_kria/jailhouse_setup/jailhouse_start.sh -o
+```
+
+Start the memory regulation: 
+```sh
+cd ~
+jailhouse cell create jailhouse/configs/arm64/zynqmp-kv260-RPU0-mempol.cell 
+jailhouse cell load inmate-mempol-RPU0 -r r5.elf 0
+jailhouse cell start inmate-mempol-RPU0
+membw_ctrl --platform kria_k26 init
+membw_ctrl --platform kria_k26 start 200 200 100 400 0
+```
+WARNING: Before Stopping the cell, stop the regulation:
+```sh
+membw_ctrl --platform kria_k26 stop
+```
+
+Start the Membomb on one of the core:
+```sh
+cd ~
+jailhouse cell create jailhouse/configs/arm64/zynqmp-zcu104-bomb0-col.cell
+jailhouse cell load col-mem-bomb-0 jailhouse/inmates/demos/arm64/mem-bomb.bin
+jailhouse cell start col-mem-bomb-0
+
+membomb -c 1 -r -v -s 1048576 -e
+```
+
 On the target start the MARTe2 VS application:
 ```sh
 ./MARTeApp.sh -l RealTimeLoader -s State1 -f ./Configuration/VS-Control.cfg
