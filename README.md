@@ -1,9 +1,12 @@
 # Steps to repeat the experiments on the arm board (tested on Kria KV260)
 
-Download MARTe2 and MARTe2-components from the official gitlab:
+Clone the MARTe2 and MARTe2-components togheter with the current repo:
 ```sh
-git clone http://vcis-gitlab.f4e.europa.eu/aneto/MARTe2.git
-git clone http://vcis-gitlab.f4e.europa.eu/aneto/MARTe2-components.git 
+git clone --recurse-submodules https://github.com/DanieleOttaviano/vs_test_omnv.git
+```
+Or if you’ve already cloned the repo:
+```sh
+git submodule update --init --recursive
 ```
 
 Initialize the bash variables using the setup_marte.sh script:

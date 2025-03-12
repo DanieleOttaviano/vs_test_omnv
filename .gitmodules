@@ -1,0 +1,6 @@
+[submodule "MARTe2"]
+	path = MARTe2
+	url = http://vcis-gitlab.f4e.europa.eu/aneto/MARTe2.git
+[submodule "MARTe2-components"]
+	path = MARTe2-components
+	url = http://vcis-gitlab.f4e.europa.eu/aneto/MARTe2-components.git
