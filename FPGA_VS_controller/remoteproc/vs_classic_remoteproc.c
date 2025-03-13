@@ -12,6 +12,7 @@
 #include <linux/skbuff.h>
 #include <linux/sysfs.h>
 #include <linux/types.h>
+#include <stdio.h>
 
 #include "remoteproc_internal.h"
 
@@ -107,7 +108,7 @@ static int vs_classic_rproc_start(struct rproc *rproc) {
 
 static int vs_classic_rproc_stop(struct rproc *rproc) {
 	struct vs_classic_rproc *p_rproc = rproc->priv;
-	unsigned long conf_port_base_addr = 0x80000000;	// take from device tree
+	unsigned long conf_port_base_addr = 0x88000000;	// take from device tree
 	volatile unsigned long __iomem *conf_port_base;
 	struct classic_vs_pl_conf_port *conf_port; 
 
@@ -155,6 +156,7 @@ static int vs_classic_rproc_probe(struct platform_device *pdev) {
 	struct device *dev = &pdev->dev;
 	struct rproc *rproc;
 	struct vs_classic_rproc **p_rproc;
+	struct resource *res;
 	int ret;
 
 	dev_info(dev, "VS Classic Controller remoteproc probing ...\n");
@@ -178,6 +180,10 @@ static int vs_classic_rproc_probe(struct platform_device *pdev) {
 	if (ret)
 		goto error;
 	dev_info(dev, "VS Classic Controller remoteproc added\n");
+
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (res != NULL)
+		printf("%lx\n", res->start);
 
 	return 0;
 error:

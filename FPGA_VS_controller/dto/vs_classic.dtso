@@ -5,12 +5,12 @@
 	fragment@0 {
 		target-path = "/";  // Apply the following overlay to the root node
 		__overlay__ {
-			vs_classic@80000000 {
+			vs_classic@88000000 {
 				phandle = <0x97>;	
 				compatible = "fciraolo,vs_classic-remoteproc";
 				#address-cells = <0x2>;
 				#size-cells = <0x1>;
-				reg = <0x0 0x80000000 0x00001000>;
+				reg = <0x0 0x88000000 0x00001000>;
 			};
 		};
 	};
