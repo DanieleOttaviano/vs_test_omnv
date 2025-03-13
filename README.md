@@ -60,7 +60,7 @@ WARNING: Check the interrupt numbers on the target with "cat /proc/interrupts"
 ./setup_board.sh
 ```
 
-On the target start the omnivisor:
+Start the omnivisor on the target:
 ```sh
 cd ~
 ./scripts_jailhouse_kria/jailhouse_setup/jailhouse_start.sh -o
@@ -75,12 +75,12 @@ jailhouse cell start inmate-mempol-RPU0
 membw_ctrl --platform kria_k26 init
 membw_ctrl --platform kria_k26 start 200 200 100 400 0
 ```
-WARNING: Before Stopping the cell, stop the regulation:
+WARNING: Before Stopping the cell, remember to stop the regulation:
 ```sh
 membw_ctrl --platform kria_k26 stop
 ```
 
-Start the Membomb on one of the core:
+Start the Membomb on the core 1:
 ```sh
 cd ~
 jailhouse cell create jailhouse/configs/arm64/zynqmp-zcu104-bomb0-col.cell
@@ -90,12 +90,22 @@ jailhouse cell start col-mem-bomb-0
 membomb -c 1 -r -v -s 1048576 -e
 ```
 
+Then start the oracle application on the core 0:
+```sh
+cd ~
+jailhouse cell create jailhouse/configs/arm64/zynqmp-kv260-APU-inmate-demo.cell
+jailhouse cell load inmate-demo-APU jailhouse/inmates/demos/arm64/oracle-demo.bin
+jailhouse cell start inmate-demo-APU
+```
+
 On the target start the MARTe2 VS application:
 ```sh
+cd test/marte2_test/
 ./MARTeApp.sh -l RealTimeLoader -s State1 -f ./Configuration/VS-Control.cfg
 ```
 or (if extremum seeking)
 ```sh
+cd test/marte2_test/
 ./MARTeApp.sh -l RealTimeLoader -s State1 -f ./Configuration/VSES-Control.cfg
 ```
 
