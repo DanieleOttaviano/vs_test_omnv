@@ -21,7 +21,7 @@ static int period;
 #define GAPS_DIM 29
 #define XPOINTS_DIM 2
 #define NSEC_PER_SEC 1000000000ULL
-#define REPS 10
+#define REPS 300
 
 struct data {
     double pf_voltages[PF_DIM];
