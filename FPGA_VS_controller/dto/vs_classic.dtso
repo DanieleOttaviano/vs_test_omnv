@@ -9,8 +9,8 @@
 				phandle = <0x97>;	
 				compatible = "fciraolo,vs_classic-remoteproc";
 				#address-cells = <0x2>;
-				#size-cells = <0x1>;
-				reg = <0x0 0x88000000 0x00001000>;
+				#size-cells = <0x2>;
+				reg = <0x0 0x88000000 0x0 0x00001000>;
 			};
 		};
 	};

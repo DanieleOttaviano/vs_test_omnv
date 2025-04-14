@@ -18,12 +18,18 @@
 
 struct pico32_rproc_data {
 	const char *device_name;
+	unsigned long base_addr;
+	unsigned long size;
 };
 
 
 struct pico32_rproc {
 	struct device *dev;
 	struct rproc *rproc;
+};
+
+static struct pico32_rproc_data pico32_data = {
+	.device_name = "pico32",
 };
 
 static void *pico32_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *is_iomem)
@@ -39,13 +45,12 @@ static void *pico32_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *is_i
 static int pico32_rproc_start(struct rproc *rproc)
 {
 	struct pico32_rproc *p_rproc = rproc->priv;
-	unsigned long fpga_base_addr = 0x80000000;	// take from device tree
 	volatile unsigned long __iomem *fpga_start;
 
 
 	dev_info(p_rproc->dev, "Starting Pico32 remoteproc\n");
 	// Map the physical address to virtual address space
-	fpga_start = ioremap(fpga_base_addr, sizeof(unsigned long));
+	fpga_start = ioremap(pico32_data.base_addr, sizeof(unsigned long));
 	if (!fpga_start) {
 		dev_err(p_rproc->dev, "Failed to map FPGA base address\n");
 		return -ENOMEM;
@@ -64,11 +69,10 @@ static int pico32_rproc_start(struct rproc *rproc)
 static int pico32_rproc_stop(struct rproc *rproc)
 {
 	struct pico32_rproc *p_rproc = rproc->priv;
-	unsigned long fpga_base_addr = 0x80000000;	// take from device tree
 	volatile unsigned long __iomem *fpga_start;
 
 	// Map the physical address to virtual address space
-	fpga_start = ioremap(fpga_base_addr, sizeof(unsigned long));
+	fpga_start = ioremap(pico32_data.base_addr, sizeof(unsigned long));
 	if (!fpga_start) {
 		dev_err(p_rproc->dev, "Failed to map FPGA base address\n");
 		return -ENOMEM;
@@ -99,10 +103,21 @@ static struct rproc_ops pico32_rproc_ops = {
 
 static int pico32_rproc_probe(struct platform_device *pdev)
 {
-	struct device *dev = &pdev->dev;
+	struct device *dev = &pdev->dev;	
+	struct device_node *np = dev->of_node;
 	struct rproc *rproc;
 	struct pico32_rproc **p_rproc;
 	int ret;
+	u32 reg[4];  // (2 for address, 2 for size)
+	
+	ret = of_property_read_u32_array(np, "reg", reg, 4);
+	if (ret) {
+		dev_err(dev, "Failed to read reg property\n");
+	} else {
+		pico32_data.base_addr = (unsigned long)reg[0] << 32 | reg[1];
+		pico32_data.size = (unsigned long)reg[2] << 32 | reg[3];
+		dev_info(dev, "Pico32 base address: 0x%lx, size: 0x%lx\n", pico32_data.base_addr, pico32_data.size);
+	}
 
 	dev_info(dev, "Pico32 remoteproc probing ...\n");
 	/* Allocate remoteproc */
@@ -136,11 +151,6 @@ static int pico32_rproc_remove(struct platform_device *pdev)
 {
 	return 0;
 }
-
-
-static const struct pico32_rproc_data pico32_data = {
-	.device_name = "pico32",
-};
 
 
 static const struct of_device_id pico32_rproc_of_match[] = {
