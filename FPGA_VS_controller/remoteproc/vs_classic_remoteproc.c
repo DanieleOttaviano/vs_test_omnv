@@ -29,8 +29,10 @@ struct classic_vs_pl_conf_port {
     u16 marte_strategy_offset;
     /*0x0A*/ 
     u16 safe_control_output_offset;
+	/*0x0B*/ 
+    u16 output_counter_offset;
     /*0x0C*/ 
-    u32 res_0_0;
+    u16 res_0_0;
     /*0x10*/
     u64 shared_page_base;
     /* Constant values */
@@ -100,6 +102,7 @@ static int vs_classic_rproc_start(struct rproc *rproc) {
     iowrite16(0x0D0, &conf_port->zdot_offset);
     iowrite16(0x1D2, &conf_port->marte_strategy_offset);
     iowrite16(0x1E0, &conf_port->safe_control_output_offset);
+	iowrite16(0x1D3, &conf_port->output_counter_offset)
     
     /* Finally, enable the module */
     iowrite8(1, &conf_port->enabled);
