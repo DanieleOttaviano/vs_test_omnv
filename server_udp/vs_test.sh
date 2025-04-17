@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Check for valid first argument
 if [ "$1" != "solo" ] && [ "$1" != "membomb" ]; then
@@ -9,6 +9,9 @@ fi
 # Initialize flags
 COL_FLAG=0
 BWREG_FLAG=0
+
+# Repetitions
+REPS=1
 
 # Parse additional arguments
 for arg in "$@"; do
@@ -39,7 +42,8 @@ if [ -f "$FILENAME" ]; then
     rm "$FILENAME"
 fi
 
-for i in $(seq 1 30); do
+i=1
+while [ $i -le ${REPS} ]; do
     echo "root" > /dev/ttyUSB.kria.1
     sleep 1
     echo "root" > /dev/ttyUSB.kria.1
@@ -54,7 +58,6 @@ for i in $(seq 1 30); do
         echo "Board is not responsive, rebooting..."
         taco target kria reset
         sleep 60
-        i=$(($i-1))
         continue
     else
         echo "Board Alive!"
@@ -72,12 +75,19 @@ for i in $(seq 1 30); do
     echo "$TEST_CMD" > /dev/ttyUSB.kria.1
 
     # Wait for the test setup
-    sleep 15
+    sleep 30
 
     echo "Start the Simulation. Rep: $i"
 
     # Start sending the UDP packets
-    sudo chrt -f 99 ./vses_udp
+    sudo chrt -f 75 ./vses_udp
+    timeout -s 2 2m sudo chrt -f 75 ./vses_udp
+    if [[ $? -ne 0 ]]; then 
+        echo "Timeout, rebooting..."
+        taco target kria reset
+        sleep 60
+        continue
+    fi
 
     # Save the cycle times
     if [ -f VS_Extremum_Track/cycle_times.txt ]; then
@@ -93,6 +103,7 @@ for i in $(seq 1 30); do
     echo "jailhouse disable" > /dev/ttyUSB.kria.1
     echo "reboot" > /dev/ttyUSB.kria.1
 
+    i=$(($i+1))
     # Wait before the next iteration
     sleep 30
 done
