@@ -75,12 +75,12 @@ while [ $i -le ${REPS} ]; do
     echo "$TEST_CMD" > /dev/ttyUSB.kria.1
 
     # Wait for the test setup
-    sleep 30
+    sleep 15 # TO CHANGE -> 30
 
     echo "Start the Simulation. Rep: $i"
 
     # Start sending the UDP packets
-    sudo chrt -f 75 ./vses_udp
+    # sudo chrt -f 75 ./vses_udp
     timeout -s 2 2m sudo chrt -f 75 ./vses_udp
     if [[ $? -ne 0 ]]; then 
         echo "Timeout, rebooting..."
@@ -104,6 +104,8 @@ while [ $i -le ${REPS} ]; do
     echo "reboot" > /dev/ttyUSB.kria.1
 
     i=$(($i+1))
-    # Wait before the next iteration
-    sleep 30
+    # Wait before the next iteration if is less than REPS
+    if [ $i -le ${REPS} ]; then
+        sleep 30
+    fi
 done

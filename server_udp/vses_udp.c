@@ -249,7 +249,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    srand(time(NULL));
+    // srand(time(NULL));
     start_periodic_timer(0, 1000);
 
     for (int rep = 0; rep < REPS; rep++) {
@@ -283,8 +283,9 @@ int main() {
     }
 
     for(int rep = 0; rep < REPS; rep++) {
+        printf("########################### Reps %d ###########################\n", rep);
         for(size_t i = 0; i < ivs3_count; i++) {
-            printf("Received values %lf (%lf), Cycle Time %zu: %lf\n", recv_data[i], gt_data[i], i, cycle_times[i + (rep * MAX_ELEMENTS)]);
+            printf("Received values %lf (%lf), Cycle Time %05zu: %lf\n",recv_data[i], gt_data[i], i, cycle_times[i + (rep * MAX_ELEMENTS)]);
         }
     } 
 
