@@ -97,12 +97,12 @@ static int vs_classic_rproc_start(struct rproc *rproc) {
     /* Shared page data */
     iowrite64(0x46d00000, &conf_port->shared_page_base);
 
-    iowrite16(0x1D1, &conf_port->counter_offset); //input_counter
     iowrite16(0x0B8, &conf_port->ivs3_offset);
     iowrite16(0x0D0, &conf_port->zdot_offset);
+    iowrite16(0x1D1, &conf_port->counter_offset); //input_counter
     iowrite16(0x1D2, &conf_port->marte_strategy_offset);
+	iowrite16(0x1D3, &conf_port->output_counter_offset);
     iowrite16(0x1E0, &conf_port->safe_control_output_offset);
-	iowrite16(0x1D3, &conf_port->output_counter_offset)
     
     /* Finally, enable the module */
     iowrite8(1, &conf_port->enabled);
