@@ -156,31 +156,33 @@ int main(int argc, char **argv) {
     shared_page->marte_strategy = 0;
     x_old = 0;
 
-    while (fscanf(file, "%lf %lf %lf", &ivs3, &zdot, &res) != EOF) {
+    printf("Addr output_counter %p\n", &shared_page->output_counter);
+    printf("Addr es_output %p\n", &shared_page->es_output);   
+    // while (fscanf(file, "%lf %lf %lf", &ivs3, &zdot, &res) != EOF) {
 
-        if (i == 3115) {
-            printf("NEXT %d\n", getpid());
-            getchar();
-            // break;
-        }
+    //     if (i == 3115) {
+    //         printf("NEXT %d\n", getpid());
+    //         getchar();
+    //         // break;
+    //     }
 
-        shared_page->ivs3 = ivs3;
-        shared_page->zdot = zdot;
-        shared_page->input_counter++;
+    //     shared_page->data.ivs3 = ivs3;
+    //     shared_page->data.zdot = zdot;
+    //     shared_page->input_counter++;
 
-        for (; i < 10; i++) {
+    //     for (; i < 10; i++) {
 
-            quick_check(conf_port, shared_page, ivs3, zdot, res, &x_old, i);
+    //         quick_check(conf_port, shared_page, ivs3, zdot, res, &x_old, i);
 
-            // wait_and_check(shared_page, res);
+    //         // wait_and_check(shared_page, res);
 
-            shared_page->marte_strategy = i == 9;
-            shared_page->input_counter++;
-        }
+    //         shared_page->marte_strategy = i == 9;
+    //         shared_page->input_counter++;
+    //     }
 
-        quick_check(conf_port, shared_page, ivs3, zdot, res, &x_old, i++);
-        // wait_and_check(shared_page, res);
-    }
+    //     quick_check(conf_port, shared_page, ivs3, zdot, res, &x_old, i++);
+    //     // wait_and_check(shared_page, res);
+    // }
 
     fclose(file);
 
