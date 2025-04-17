@@ -48,11 +48,17 @@ struct classic_vs_pl_conf_port {
 
 struct vs_classic_rproc_data {
     const char *device_name;
+	unsigned long base_addr;
+	unsigned long size;
 };
 
 struct vs_classic_rproc {
     struct device *dev;
     struct rproc *rproc;
+};
+
+static struct vs_classic_rproc_data vs_classic_data = {
+	.device_name = "vs_classic",
 };
 
 static void *vs_classic_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *is_iomem) {
@@ -66,13 +72,12 @@ static void *vs_classic_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *
 
 static int vs_classic_rproc_start(struct rproc *rproc) {
 	struct vs_classic_rproc *p_rproc = rproc->priv;
-	unsigned long conf_port_base_addr = 0x80000000;	// take from device tree
 	volatile unsigned long __iomem *conf_port_base;
 	struct classic_vs_pl_conf_port *conf_port;
 
 	dev_info(p_rproc->dev, "Starting VS Classic Controller remoteproc\n");
 	// Map the physical address to virtual address space
-	conf_port_base = ioremap(conf_port_base_addr, sizeof(struct classic_vs_pl_conf_port));
+	conf_port_base = ioremap(vs_classic_data.base_addr, sizeof(struct classic_vs_pl_conf_port));
 	if (!conf_port_base) {
 		dev_err(p_rproc->dev, "Failed to map FPGA base address\n");
 		return -ENOMEM;
@@ -107,12 +112,11 @@ static int vs_classic_rproc_start(struct rproc *rproc) {
 
 static int vs_classic_rproc_stop(struct rproc *rproc) {
 	struct vs_classic_rproc *p_rproc = rproc->priv;
-	unsigned long conf_port_base_addr = 0x80000000;	// take from device tree
 	volatile unsigned long __iomem *conf_port_base;
 	struct classic_vs_pl_conf_port *conf_port; 
 
 	// Map the physical address to virtual address space
-	conf_port_base = ioremap(conf_port_base_addr, sizeof(struct classic_vs_pl_conf_port));
+	conf_port_base = ioremap(vs_classic_data.base_addr, sizeof(struct classic_vs_pl_conf_port));
 	if (!conf_port_base) {
 		dev_err(p_rproc->dev, "Failed to map FPGA base address\n");
 		return -ENOMEM;
@@ -153,9 +157,19 @@ static struct rproc_ops vs_classic_rproc_ops = {
 static int vs_classic_rproc_probe(struct platform_device *pdev) {
 
 	struct device *dev = &pdev->dev;
+	struct device_node *np = dev->of_node;
 	struct rproc *rproc;
 	struct vs_classic_rproc **p_rproc;
-	int ret;
+	int ret;	
+	u32 reg[4];  // (2 for address, 2 for size)
+	
+	ret = of_property_read_u32_array(np, "reg", reg, 4);
+	if (ret) {
+		dev_err(dev, "Failed to read reg property\n");
+	} else {
+		vs_classic_data.base_addr = (unsigned long)reg[0] << 32 | reg[1];
+		vs_classic_data.size = (unsigned long)reg[2] << 32 | reg[3];
+	}
 
 	dev_info(dev, "VS Classic Controller remoteproc probing ...\n");
 	/* Allocate remoteproc */
@@ -189,10 +203,6 @@ static int vs_classic_rproc_remove(struct platform_device *pdev) {
 	return 0;
 }
 
-
-static const struct vs_classic_rproc_data vs_classic_data = {
-	.device_name = "vs_classic",
-};
 
 static const struct of_device_id vs_classic_rproc_of_match[] = {
 	{ .compatible	= "fciraolo,vs_classic-remoteproc", .data = &vs_classic_data, },
