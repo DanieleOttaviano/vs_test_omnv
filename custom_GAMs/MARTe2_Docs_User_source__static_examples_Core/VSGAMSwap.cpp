@@ -80,15 +80,16 @@ bool VSGAMSwap::Setup() {
 
 bool VSGAMSwap::Execute() {
    
-    if(*marteStrategy == 0x01 && (*inputCounter == *outputCounter)) {
+    if(*marteStrategy == 0x01) {
+        while(*inputCounter != *outputCounter) {
+            // Wait for the input and output counters to match
+        }
         *vs3_ref = *vs3fpga_ref;
     } 
     else {
         *vs3_ref = *vs3es_ref;
     }
 
-    printf("Vs3es_ref: %f\t", *vs3es_ref);
-    printf("Vs3fpga_ref: %f\n", *vs3fpga_ref);
     return true;
 }
 

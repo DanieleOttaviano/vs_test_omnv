@@ -79,7 +79,7 @@ bool VSGAMIncrement::Execute() {
     
     counter++;
     
-    *outputCounter = counter; //0 is written by the FPGA after inputer counter is incremented
+    *outputCounter = 0; //is written by the FPGA after inputer counter is incremented
     *inputCounter = counter;
     // Single swap
     if (*oracleDecision == 1) {
