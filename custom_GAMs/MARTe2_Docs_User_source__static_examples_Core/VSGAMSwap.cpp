@@ -85,7 +85,7 @@ bool VSGAMSwap::Execute() {
             // Wait for the input and output counters to match
         }
         *vs3_ref = *vs3fpga_ref;
-    } 
+    }
     else {
         *vs3_ref = *vs3es_ref;
     }
