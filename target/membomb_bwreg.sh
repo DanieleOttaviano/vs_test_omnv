@@ -36,6 +36,10 @@ jailhouse cell load mem-bomb-0 jailhouse/inmates/demos/arm64/mem-bomb.bin
 jailhouse cell start mem-bomb-0
 membomb -c 1 -v -s 2097152 -e
 
+# Enable FPGA traffic generators
+devmem 9000000 32 1
+devmem 9800000 32 1
+
 # Snoop the network traffic
 tcpdump -G 10800 -w packets_membomb_bwreg.pcap "udp port 44489 or udp port 44488" &
 
