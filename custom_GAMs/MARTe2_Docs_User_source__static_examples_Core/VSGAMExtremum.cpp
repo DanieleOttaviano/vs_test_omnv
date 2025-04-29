@@ -145,7 +145,7 @@ bool VSGAMExtremum::Execute() {
     *vs3_ref = alpha * sqrt(omega) * cos(omega * t) - k * sqrt(omega) * sin(omega * t) * x_hat * x_hat;
 
     // Current Time
-    t = t + 0.001;
+    t = t + 0.0002;
 
     return true;
 }
