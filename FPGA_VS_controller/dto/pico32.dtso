@@ -5,8 +5,10 @@
 	fragment@0 {
 		target-path = "/reserved-memory";  // Reference the reserved memory node in the base DTB
 		__overlay__ {
-			pico32_reserved: pico32@70000000 {
-				phandle = <0x98>;
+			#address-cells = <0x2>;
+			#size-cells = <0x2>;
+			pico32@70000000 {
+				phandle = <0x98>;	
 				no-map;
 				reg = <0x0 0x70000000 0x0 0x2000000>;
 			};
@@ -16,11 +18,11 @@
 	fragment@1 {
 		target-path = "/";  // Apply the following overlay to the root node
 		__overlay__ {
+			#address-cells = <0x2>;
+			#size-cells = <0x2>;
 			pico32@88000000 {
 				phandle = <0x97>;	
 				compatible = "dottavia,pico32-remoteproc";
-				#address-cells = <0x2>;
-				#size-cells = <0x2>;
 				memory-region = <0x98>;
 				reg = <0x0 0x88000000 0x0 0x00001000>;
 			};
