@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# usage source vses_test.sh [solo|membomb] [col] [bwreg]
+
 # Check for valid first argument
 if [ "$1" != "solo" ] && [ "$1" != "membomb" ]; then
     echo "First argument must be 'solo' or 'membomb'"
@@ -7,8 +9,8 @@ if [ "$1" != "solo" ] && [ "$1" != "membomb" ]; then
 fi
 
 # Initialize flags
-COL_FLAG=0
-BWREG_FLAG=0
+CACHECOL="off"
+BWREG="off"
 
 # Repetitions
 REPS=1
@@ -17,25 +19,18 @@ REPS=1
 for arg in "$@"; do
     case $arg in
         col)
-            COL_FLAG=1
+            CACHECOL="on"
             ;;
         bwreg)
-            BWREG_FLAG=1
+            BWREG="on"
             ;;
     esac
 done
 
-echo "Running the test $1  (COLORING=$COL_FLAG) (BW REGULATION=$BWREG_FLAG)"
+echo "Running the test $1  (COLORING=$CACHECOL) (BW REGULATION=$BWREG)"
 
 # Construct the filename based on the arguments
-FILENAME="Results/cycle_times_$1"
-if [ $COL_FLAG -eq 1 ]; then
-    FILENAME="${FILENAME}_col"
-fi
-if [ $BWREG_FLAG -eq 1 ]; then
-    FILENAME="${FILENAME}_bwreg"
-fi
-FILENAME="${FILENAME}.txt"
+FILENAME="Results/cycle_times_$1_col_${CACHECOL}_bwreg_${BWREG}.txt"
 
 # Remove the file if it exists
 if [ -f "$FILENAME" ]; then
@@ -64,18 +59,11 @@ while [ $i -le ${REPS} ]; do
     fi
 
     # Start the test on the target
-    TEST_CMD="./$1"
-    if [ $COL_FLAG -eq 1 ]; then
-        TEST_CMD="${TEST_CMD}_col"
-    fi
-    if [ $BWREG_FLAG -eq 1 ]; then
-        TEST_CMD="${TEST_CMD}_bwreg"
-    fi
-    TEST_CMD="${TEST_CMD}.sh &"
+    TEST_CMD="./interf_test.sh --interference $1 --cachecol $CACHECOL --bwreg $BWREG &"
     echo "$TEST_CMD" > /dev/ttyUSB.kria.1
 
     # Wait for the test setup
-    sleep 15 # TO CHANGE -> 30
+    sleep 30 # TO CHANGE -> 30
 
     echo "Start the Simulation. Rep: $i"
 
@@ -97,11 +85,11 @@ while [ $i -le ${REPS} ]; do
     fi
 
     # Reboot the board (Stop mempol if enabled)
-    if [ $BWREG_FLAG -eq 1 ]; then
+    if [[ $BWREG == "on" ]]; then
         echo "membw_ctrl --platform kria_k26 stop" > /dev/ttyUSB.kria.1
     fi
     echo "jailhouse disable" > /dev/ttyUSB.kria.1
-    echo "reboot" > /dev/ttyUSB.kria.1
+#    echo "reboot" > /dev/ttyUSB.kria.1
 
     i=$(($i+1))
     # Wait before the next iteration if is less than REPS

@@ -21,7 +21,7 @@ static int period;
 #define GAPS_DIM 29
 #define XPOINTS_DIM 2
 #define NSEC_PER_SEC 1000000000ULL
-#define REPS 300
+#define REPS 1
 
 struct data {
     double pf_voltages[PF_DIM];
@@ -200,6 +200,8 @@ int main() {
     double cycle_times[REPS * MAX_ELEMENTS];
     size_t pf_volt_count,vs3_count, pf_current_count, ivs3_count, ip_count, zc_count, zcdot_count, gaps_count, xpoints_count, gt_count, recv_count = 0;
 
+    printf("Starting VS_Extremum_Track UDP Client\n");
+
     // Load data from files
     pf_volt_count = load_pf_from_file("VS_Extremum_Track/PF_Voltages.txt", pf_volt_data, MAX_ELEMENTS, PF_DIM);
     vs3_count = load_data_from_file("VS_Extremum_Track/VS3.txt", vs3_data, MAX_ELEMENTS);
@@ -212,12 +214,13 @@ int main() {
     xpoints_count = load_xpoints_from_file("VS_Extremum_Track/XPoints.txt", xpoints_data, MAX_ELEMENTS, XPOINTS_DIM);
     gt_count = load_data_from_file("VS_Extremum_Track/VS3_ref.txt", gt_data, MAX_ELEMENTS);
 
+    printf("Loaded data.\n");
 
     if (ivs3_count != zc_count || ivs3_count != gt_count || ivs3_count != pf_volt_count || ivs3_count != pf_current_count || ivs3_count != ip_count || ivs3_count != zcdot_count || ivs3_count != gaps_count || ivs3_count != xpoints_count) {
         fprintf(stderr, "Data files have different number of elements\n");
         exit(EXIT_FAILURE);
     }
-
+    
     // Creating socket file descriptor for sending
     if ((send_sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
         perror("send socket creation failed");
@@ -249,11 +252,16 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    printf("Sockets created and bound successfully.\n");
+
     // srand(time(NULL));
-    start_periodic_timer(0, 1000);
+    start_periodic_timer(0, 1000); //200
+
+    printf("Starting periodic timer with offset 0 and period 1000 us.\n");
 
     for (int rep = 0; rep < REPS; rep++) {
         for (int i = 0; i < ivs3_count; i++) {
+            // printf("########################### %d ###########################\n", i);
             for (int j = 0; j < 11; j++) {
                 data.pf_voltages[j] = pf_volt_data[i][j]; //(double)rand() / RAND_MAX; //j+1;
                 data.pf_currents[j] = pf_current_data[i][j]; //(double)rand() / RAND_MAX; //j+12;
