@@ -10,18 +10,18 @@
 static struct timespec r;
 static int period;
 
-
-#define SEND_IP "192.168.1.82"
+#define SEND_IP "192.168.1.60"
 #define SEND_PORT 44488
 #define RECV_IP "192.168.1.1"
 #define RECV_PORT 44489
-#define MAX_ELEMENTS 100 //20000
+#define MAX_ELEMENTS 10000 
 #define INPUTS_DIM 15
 #define PF_DIM 11
 #define GAPS_DIM 29
 #define XPOINTS_DIM 2
 #define NSEC_PER_SEC 1000000000ULL
 #define REPS 1
+#define PERIOD_US 200
 
 struct data {
     double pf_voltages[PF_DIM];
@@ -255,13 +255,13 @@ int main() {
     printf("Sockets created and bound successfully.\n");
 
     // srand(time(NULL));
-    start_periodic_timer(0, 1000); //200
+    start_periodic_timer(0, PERIOD_US);
 
-    printf("Starting periodic timer with offset 0 and period 1000 us.\n");
+    printf("Starting periodic timer with offset 0 and period %d us.\n", PERIOD_US);
 
     for (int rep = 0; rep < REPS; rep++) {
         for (int i = 0; i < ivs3_count; i++) {
-            // printf("########################### %d ###########################\n", i);
+            // printf("########################### %d ###########################\n", i)
             for (int j = 0; j < 11; j++) {
                 data.pf_voltages[j] = pf_volt_data[i][j]; //(double)rand() / RAND_MAX; //j+1;
                 data.pf_currents[j] = pf_current_data[i][j]; //(double)rand() / RAND_MAX; //j+12;
@@ -284,7 +284,7 @@ int main() {
             clock_gettime(CLOCK_REALTIME, &end);
             recv_count++;
 
-            cycle_times[i + (rep * MAX_ELEMENTS)] = (end.tv_sec - start.tv_sec) * 1e9 + (end.tv_nsec - start.tv_nsec); // time in nanoseconds
+            cycle_times[i + (rep * MAX_ELEMENTS)] = (end.tv_sec - start.tv_sec) * 1e6 + (end.tv_nsec - start.tv_nsec) / 1000; //time in usec
             wait_next_activation();
         }
         recv_count = 0;
