@@ -22,7 +22,7 @@ done
 # Cell configurations
 CELL_APU="jailhouse/configs/arm64/zynqmp-kv260-APU-inmate-demo.cell"
 CELL_APU_COL="jailhouse/configs/arm64/zynqmp-kv260-APU-inmate-demo-col.cell"
-CELL_BOMB0="jailhouse/configs/arm64/zynqmp-zcu104-bomb0.cell"
+CELL_BOMB0="jailhouse/configs/arm64/zynqmp-zcu104-bomb0-col.cell"
 CELL_BOMB0_COL="jailhouse/configs/arm64/zynqmp-zcu104-bomb0-col.cell"
 CELL_VS="jailhouse/configs/arm64/zynqmp-kv260-VS-Classic.cell"
 CELL_MEMPOL_RPU="jailhouse/configs/arm64/zynqmp-kv260-RPU0-mempol.cell"
@@ -30,7 +30,7 @@ CELL_MEMPOL_RPU="jailhouse/configs/arm64/zynqmp-kv260-RPU0-mempol.cell"
 #Inmates names
 INMATE_APU="inmate-demo-APU"
 INMATE_APU_COL="inmate-demo-APU-col"
-INMATE_BOMB0="mem-bomb-0"
+INMATE_BOMB0="col-mem-bomb-0"
 INMATE_BOMB0_COL="col-mem-bomb-0-col"
 INMATE_VS="inmate-demo-VS"
 MEMPOL_RPU_INMATE="inmate-mempol-RPU0"
@@ -49,7 +49,7 @@ BOMB_SIZE=2097152  # 2 MB
 # TCPDUMP filering
 TCPDUMP_FILTER="udp port 44489 or udp port 44488"
 # Output file for tcpdump
-TCPDUMP_OUTPUT="packets_${INTERF}_col_${CACHECOL}_bwreg_${BWREG}.pcap"
+TCPDUMP_OUTPUT="packets_${INTERF}_color_${CACHECOL}_bwreg_${BWREG}.pcap"
 
 # Traffic Generator addresses
 TG1_ADDR=9000000
@@ -102,7 +102,6 @@ if [[ "$BWREG" == "on" ]]; then
     jailhouse cell create $CELL_MEMPOL_RPU
     jailhouse cell load $MEMPOL_RPU_INMATE -r $BIN_MEMPOL_RPU 0
     jailhouse cell start $MEMPOL_RPU_INMATE
-    sleep 1
     membw_ctrl --platform kria_k26 init
     membw_ctrl --platform kria_k26 start 100 5 100 700 0
 
@@ -122,9 +121,6 @@ if [[ "$INTERF" == "membomb" ]]; then
     jailhouse cell load $INMATE_BOMB0 $BIN_BOMB0
     jailhouse cell start $INMATE_BOMB0
     membomb -c 1 -v -s $BOMB_SIZE -e
-
-    # echo "Starting membomb benchmark..."
-    # bench --cpu 0 --step 64 modify &
 
     # Enable FPGA traffic generators
     echo "Enabling FPGA traffic generators..."

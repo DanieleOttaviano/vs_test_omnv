@@ -1,6 +1,9 @@
 #Remove RT-Throttling
 echo -1 > /proc/sys/kernel/sched_rt_runtime_us
 
+# Set hugepages
+sysctl -w vm.nr_hugepages=8
+
 # Remove all irq to core 3
 cd /proc/irq
 for i in [0-9]*
